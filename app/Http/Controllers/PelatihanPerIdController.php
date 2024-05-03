@@ -125,15 +125,72 @@ class PelatihanPerIdController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $pelatihan = RiwayatPelatihan::find($id);
+        $bukti_pelatihan = null;
+        if(!$pelatihan){
+            return redirect()->back()->with('error', 'Pelatihan not found.');
+        }
+        
+        if($pelatihan->verified == 1){
+            return redirect()->back()->with('error', 'Pelatihan sudah diverifikasi.');
+        }
+
+        $pelatihan_wajib = PelatihanWajibPerPeriode::where('periode_id', $pelatihan->peiode_id)->get();
+        $year = Periode::find($pelatihan->periode_id)->periode_name;
+        if($pelatihan->bukti_pelatihan){
+            $bukti_pelatihan = explode(',', $pelatihan->bukti_pelatihan);
+        }
+        return view('user_type.auth.karyawan.pelatihan-edit', compact('year', 'pelatihan', 'pelatihan_wajib', 'bukti_pelatihan'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $year, string $id)
     {
-        //
+        $pelatihan = RiwayatPelatihan::where('id', $id)->first();
+        $periode_id = Periode::where('periode_name', $year)->first()->id;
+        if(!$pelatihan || $pelatihan->verified == 1 || $pelatihan->periode_id != $periode_id){
+            return redirect()->back()->with('error', 'Pelatihan not found.');
+        }
+
+        $bukti_pelatihan = null;
+        $durasi = 0;
+        try{
+            if(count($request->file('bukti_pelatihan', [])) > 0){
+                foreach($request->file('bukti_pelatihan', []) as $file){
+                    $file_name = auth()->user()->NIK.'_'.uniqid().'.'.$file->getClientOriginalExtension();
+                    $file->move(public_path('bukti'), $file_name);
+                    $bukti_pelatihan[] = $file_name;
+                }
+                $bukti_pelatihan = implode(',', $bukti_pelatihan);
+                $bukti_pelatihan = $request->old_bukti_pelatihan.','.$bukti_pelatihan;
+            } else {
+                $bukti_pelatihan = $request->old_bukti_pelatihan;
+            }
+
+            $tgl_mulai = strtotime($request->tgl_mulai);
+            $tgl_selesai = strtotime($request->tgl_selesai);
+            $durasi = ($tgl_selesai - $tgl_mulai) / 3600;
+            if($durasi < 0){
+                return redirect()->back()->with('error', 'Durasi pelatihan tidak boleh kurang dari 0 jam');
+            }
+            
+            $update = [
+                'wajib' => $request->wajib,
+                'nama_pelatihan' => $request->nama_pelatihan,
+                'nama_penyelenggara' => $request->nama_penyelenggara,
+                'tgl_mulai' => $request->tgl_mulai,
+                'tgl_selesai' => $request->tgl_selesai,
+                'bukti_pelatihan' => $bukti_pelatihan,
+                'durasi' => $durasi,
+                'verified' => 0
+            ];
+            $pelatihan->update($update);
+            return redirect()->route('pencatatan.show',$year)->with('success', 'Pelatihan berhasil diubah');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**

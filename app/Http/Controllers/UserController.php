@@ -36,30 +36,34 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'full_name' => 'required',
-            'NIK' => 'required|numeric',
-            'unit' => 'string',
-            'role' => 'required'
-        ]);
-
-        $input = $request->all();
-        
-        $temp = [];
-        $temp['password'] = Hash::make($input['NIK']);
-        $words = explode(" ", $input['full_name']);
-        $temp['email'] = $words[0] . '.' . $input['NIK'];
-        
-        $user = User::create([
-            'full_name' => $input['full_name'],
-            'NIK' => $input['NIK'],
-            'password' => $temp['password'],
-            'email' => $temp['email'],
-            'role_id' => $input['role'],
-            'unit' => $input['unit'],
-        ]);
-
-        return redirect()->route('users.index')->with('success','User created successfully');
+        try{
+            $this->validate($request, [
+                'full_name' => 'required',
+                'NIK' => 'required|numeric',
+                'unit' => 'string',
+                'role' => 'required'
+            ]);
+    
+            $input = $request->all();
+            
+            $temp = [];
+            $temp['password'] = Hash::make($input['NIK']);
+            $words = explode(" ", $input['full_name']);
+            $temp['email'] = $words[0] . '.' . $input['NIK'];
+            
+            $user = User::create([
+                'full_name' => $input['full_name'],
+                'NIK' => $input['NIK'],
+                'password' => $temp['password'],
+                'email' => $temp['email'],
+                'role_id' => $input['role'],
+                'unit' => $input['unit'],
+            ]);
+    
+            return redirect()->route('users.index')->with('success','User created successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')->with('error', $e->getMessage());
+        }
 
     }
 

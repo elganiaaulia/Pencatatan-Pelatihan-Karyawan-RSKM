@@ -26,12 +26,12 @@ class PeriodeDataTable extends DataTable
         ->editColumn('action', function ($item) {
             $periode = htmlentities($item->periode_name, ENT_QUOTES, 'UTF-8');
             if($item->status == 1){
-                return '<a class="btn btn-white my-auto p-2 rounded-1" href="'.route('periode.show',$item->id).'" data-bs-toggle="tooltip" data-bs-original-title="Edit User"><i class="fas fa-toggle-off text-dark m-0"></i></a>
-                <a class="btn btn-primary my-auto p-2 rounded-1" href="'.route('periode.edit',$item->id).'" data-bs-toggle="tooltip" data-bs-original-title="Edit Periode"><i class="fas fa-edit text-white m-0"></i></a>
+                return '<a class="btn btn-white my-auto p-2 rounded-1" href="'.route('periode.show',$item->id).'" data-bs-toggle="tooltip" data-bs-original-title="Change Status"><i class="fas fa-toggle-off text-dark m-0"></i></a>
+                <button class="btn btn-primary my-auto p-2 rounded-1" onclick="editModal('.$item->id.',\''.$periode.'\')"><i class="fas fa-edit text-white m-0"></i></button>
                 <button class="btn btn-danger my-auto p-2 rounded-1" onclick="deleteModal('.$item->id.',\''.$periode.'\')"><i class="fas fa-trash-alt text-white m-0"></i></button>';
             } else{
-                return '<a class="btn btn-dark my-auto p-2 rounded-1" href="'.route('periode.show',$item->id).'" data-bs-toggle="tooltip" data-bs-original-title="Edit User"><i class="fas fa-toggle-on text-white m-0"></i></a>
-                <a class="btn btn-primary my-auto p-2 rounded-1" href="'.route('periode.edit',$item->id).'" data-bs-toggle="tooltip" data-bs-original-title="Edit Periode"><i class="fas fa-edit text-white m-0"></i></a>
+                return '<a class="btn btn-dark my-auto p-2 rounded-1" href="'.route('periode.show',$item->id).'" data-bs-toggle="tooltip" data-bs-original-title="Change Status"><i class="fas fa-toggle-on text-white m-0"></i></a>
+                <button class="btn btn-primary my-auto p-2 rounded-1" onclick="editModal('.$item->id.',\''.$periode.'\')"><i class="fas fa-edit text-white m-0"></i></button>
                 <button class="btn btn-danger my-auto p-2 rounded-1" onclick="deleteModal('.$item->id.',\''.$periode.'\')"><i class="fas fa-trash-alt text-white m-0"></i></button>';
             }
         })

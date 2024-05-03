@@ -21,7 +21,7 @@ return new class extends Migration
             ->constrained('periode')->onUpdate('cascade');
             $table->string('nama_pelatihan');
             $table->string('nama_penyelenggara');
-            $table->string('bukti_pelatihan');
+            $table->string('bukti_pelatihan')->nullable();
             $table->dateTime('tgl_mulai');
             $table->dateTime('tgl_selesai');
             $table->integer('durasi');

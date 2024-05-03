@@ -44,20 +44,18 @@
     </div>
 </div>
 
-<dialog class="bg-transparent border-0" id="delete_modal" aria-labelledby="delete-modal">
+<dialog class="bg-transparent border-0" id="modal" aria-labelledby="modal">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-body">
                 <div class="modal-header">
-                    <h5 class="modal-title font-weight-normal" id="delete-user-label">
-                        Delete data periode
-                        <q id="delete-label"></q> 
+                    <h5 id="label" class="modal-title font-weight-normal">
                     </h5>
                 </div>
-                <form id="delete-form" role="form text-left" method="POST" action="" enctype="multipart/form-data">
+                <form id="form" role="form text-left" method="POST" action="" enctype="multipart/form-data">
                     @csrf
                     @method('DELETE')
-                    <div class="modal-footer">
+                    <div class="modal-footer" id="form-input">
                         <button type="button" onclick="closeModal()" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
                         <button autofocus type="submit" class="btn bg-gradient-danger">Delete</button>
                     </div>
@@ -65,7 +63,7 @@
             </div>
         </div>
     </div>
-  </dialog>
+</dialog>
 
 @endsection
 
@@ -88,25 +86,43 @@
         
     });
 
-    const delete_modal = document.getElementById('delete_modal');
-    const delete_name = document.getElementById('delete-label');
-    const delete_form = document.getElementById('delete-form');
-    delete_modal.addEventListener('click', (event) => {
-    if (event.target === delete_modal) {
-        delete_modal.close();
+    const modal = document.getElementById('modal');
+    const name = document.getElementById('label');
+    const form = document.getElementById('form');
+    const form_input = document.getElementById('form-input');
+    modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.close();
     }
     });
 
     function deleteModal(id, label) {
-    delete_name.innerHTML = label;
-    delete_form.action = "{{ route('periode.destroy', ':id') }}".replace(':id', id);
-    delete_modal.showModal();
+        name.innerHTML = `Delete data periode <q>${label}</q>`;
+        form_input.innerHTML = `
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="button" onclick="closeModal()" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+            <button autofocus type="submit" class="btn bg-gradient-danger">Delete</button>
+            `;
+        form.action = "{{ route('periode.destroy', ':id') }}".replace(':id', id);
+        modal.showModal();
+    }
+
+    function editModal(id, label) {
+        name.innerHTML = `Edit data periode <q>${label}</q>`;
+        form_input.innerHTML = `
+            <input type="hidden" name="_method" value="PUT">
+            <input type="text" name="periode_name" value="${label}" class="form-control">
+            <button type="button" onclick="closeModal()" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+            <button autofocus type="submit" class="btn bg-gradient-success">Update</button>
+            `;
+        form.action = "{{ route('periode.update', ':id') }}".replace(':id', id);
+        modal.showModal();
     }
 
     function closeModal() {
-    delete_name.innerHTML = '';
-    delete_form.action = '';
-    delete_modal.close();
+        name.innerHTML = '';
+        form.action = '';
+        modal.close();
     }
 
     </script>

@@ -31,6 +31,13 @@ class KaryawanPerPeriodeDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn('DT_RowIndex')
+            ->editColumn('action', function ($item) {
+                if($item->verified == 0){
+                    return '<a href="' . route('pencatatan.edit', $item->id) . '" class="btn btn-primary my-auto p-2 rounded-1"><i class="fas fa-edit text-white m-0"></i></a>';
+                } else {
+                    return '-';
+                }
+            })
             ->editColumn('durasi', function ($item) {
                 return $item->durasi . ' Jam';
             })
@@ -52,7 +59,7 @@ class KaryawanPerPeriodeDataTable extends DataTable
             })
             ->orderColumn('verified', 'verified $1')
             ->orderColumn('wajib', 'wajib $1')
-            ->rawColumns(['wajib','verified', 'bukti_pelatihan']);
+            ->rawColumns(['wajib','verified', 'bukti_pelatihan', 'action']);
     }
 
     /**
@@ -102,30 +109,33 @@ class KaryawanPerPeriodeDataTable extends DataTable
                     ->orderable(false)
                     ->width(60)
                     ->addClass('text-center align-middle'),
-                Column::make('wajib')
-                    ->addClass('text-center align-middle')
-                    ->title('Wajib'),
-                Column::make('verified')
-                    ->addClass('text-center align-middle')
-                    ->title('Verified'),
-                Column::make('durasi')
-                    ->addClass('text-center align-middle')
-                    ->title('Durasi'),
-                Column::make('nama_pelatihan')
-                    ->addClass('text-center align-middle')
-                    ->title('Nama Pelatihan'),
-                Column::make('nama_penyelenggara')
-                    ->addClass('text-center align-middle')
-                    ->title('Penyelenggara'),
-                Column::computed('bukti_pelatihan')
-                    ->addClass('text-center align-middle')
-                    ->title('Bukti Pelatihan'),
-                Column::make('tgl_mulai')
-                    ->addClass('text-center align-middle')
-                    ->title('Tanggal Mulai'),
-                Column::make('tgl_selesai')
-                    ->addClass('text-center align-middle')
-                    ->title('Tanggal Selesai'),
+            Column::computed('action')
+                ->addClass('text-center align-middle')
+                ->title('Action'),
+            Column::make('wajib')
+                ->addClass('text-center align-middle')
+                ->title('Wajib'),
+            Column::make('verified')
+                ->addClass('text-center align-middle')
+                ->title('Verified'),
+            Column::make('durasi')
+                ->addClass('text-center align-middle')
+                ->title('Durasi'),
+            Column::make('nama_pelatihan')
+                ->addClass('text-center align-middle')
+                ->title('Nama Pelatihan'),
+            Column::make('nama_penyelenggara')
+                ->addClass('text-center align-middle')
+                ->title('Penyelenggara'),
+            Column::computed('bukti_pelatihan')
+                ->addClass('text-center align-middle')
+                ->title('Bukti Pelatihan'),
+            Column::make('tgl_mulai')
+                ->addClass('text-center align-middle')
+                ->title('Tanggal Mulai'),
+            Column::make('tgl_selesai')
+                ->addClass('text-center align-middle')
+                ->title('Tanggal Selesai'),
         ];
     }
 

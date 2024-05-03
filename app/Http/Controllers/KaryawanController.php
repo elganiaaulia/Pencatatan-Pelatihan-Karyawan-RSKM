@@ -36,14 +36,18 @@ class KaryawanController extends Controller
                 'password' => 'required|min:6',
                 'confirm-password' => 'required|min:6|same:password'
             ]);
-    
+
+            
             $user = User::find($id);
             $user->password = Hash::make($request->password);
             $user->save();
-    
+            
             return redirect()->route('karyawan.password')->with('success', 'Password berhasil diubah');
         } catch (\Exception $e) {
-            return redirect()->route('karyawan.password')->with('error', $e->getMessage());
+            if ($request->password != $request->input('confirm-password')) {
+                return redirect()->route('karyawan.password')->with('error', 'Password baru dan konfirmasi password tidak sama');
+            }
+            return redirect()->route('karyawan.password')->with('error', 'Gagal ubah password');
         }
     }
 }

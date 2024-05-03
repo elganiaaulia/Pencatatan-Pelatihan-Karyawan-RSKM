@@ -67,7 +67,18 @@ class PeriodeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $periode = Periode::find($id);
+        if(!$periode) {
+            return redirect()->route('periode.create')->with('error', 'Periode not found.');
+        }
+
+        $this->validate($request, [
+            'periode_name' => 'required',
+        ]);
+
+        $periode->update($request->all());
+
+        return redirect()->route('periode.create')->with('success', 'Periode '.$periode->periode_name.' updated successfully.');
     }
 
     /**

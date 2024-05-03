@@ -41,9 +41,10 @@ Route::middleware(['auth'])->group(function () {
 			Route::get('/dashboard', [KaryawanController::class, 'index'])->name('karyawan.dashboard');
 			Route::get('/password-change', [KaryawanController::class, 'passwordChange'])->name('karyawan.password');
 			Route::put('/password-update/{id}', [KaryawanController::class, 'passwordUpdate'])->name('karyawan.password.update');
-			Route::resource('/pencatatan', PelatihanPerIdController::class)->except(['create', 'store']);
+			Route::resource('/pencatatan', PelatihanPerIdController::class)->except(['create', 'store', 'update']);
 			Route::get('/pencatatan/{year}/create', [PelatihanPerIdController::class, 'createByYear'])->name('pencatatan.create');
 			Route::post('/pencatatan/{year}/store', [PelatihanPerIdController::class, 'storeByYear'])->name('pencatatan.store');
+			Route::put('/pencatatan/{year}/update/{id}', [PelatihanPerIdController::class, 'update'])->name('pencatatan.update');
 		});
 	Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 });
