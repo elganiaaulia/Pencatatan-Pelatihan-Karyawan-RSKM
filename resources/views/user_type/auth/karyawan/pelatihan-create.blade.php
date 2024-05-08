@@ -80,12 +80,49 @@
 @push('js')
     <script>
         // make durasi base on tgl_selesai - tgl_mulai, show it in input[name="durasi"] as hours
-        $('input[id="date-identifier"]').on('change', function() {
-            var tgl_mulai = new Date($('input[name="tgl_mulai"]').val());
-            var tgl_selesai = new Date($(this).val());
-            var diff = tgl_selesai - tgl_mulai;
-            var hours = Math.floor(diff / 1000 / 60 / 60);
-            $('input[name="durasi"]').val(hours + " jam");
-        });
+        function getWorkingDays(startDate, endDate) {
+        var workingDays = 0;
+        var currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            var dayOfWeek = currentDate.getDay();
+            if (dayOfWeek !== 6 && dayOfWeek !== 0) {
+                workingDays++;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return workingDays;
+    }
+
+    // make durasi base on tgl_selesai - tgl_mulai, show it in input[name="durasi"] as hours
+    $('input[id="date-identifier"]').on('change', function() {
+        var tgl_mulai = new Date($('input[name="tgl_mulai"]').val());
+        var tgl_selesai = new Date($(this).val());
+
+        var yearTglMulai = parseInt(tgl_mulai.getFullYear());
+        var yearTglSelesai = parseInt(tgl_selesai.getFullYear());
+        var yearPHP = parseInt({!! json_encode($year) !!});
+
+        if (yearTglMulai !== yearPHP || yearTglSelesai !== yearPHP) {
+            alert("Tahun tanggal mulai atau tanggal selesai tidak sama dengan tahun pelatihan, ubah ke tahun " + yearPHP + " untuk melanjutkan.");
+        }
+        
+        // Calculate working days and hours between two dates
+        var workingDays = getWorkingDays(tgl_mulai, tgl_selesai);
+        var workingHours = 0;
+
+        if (workingDays === 0) {
+            // If it's same day
+            workingHours = Math.round((tgl_selesai - tgl_mulai) / 1000 / 60 / 60);
+            if (workingHours > 7) {
+                workingHours = 7;
+            }
+        } else {
+            // If it's multiple days
+            workingHours = workingDays * 7; // Assuming each working day is 7 hours
+        }
+
+        $('input[name="durasi"]').val(workingHours + " jam");
+    });
+    
     </script>
 @endpush

@@ -30,12 +30,15 @@ Route::middleware(['auth'])->group(function () {
 			Route::post('/upload', [HomeController::class, 'upload'])->name('upload.tinymce');
 			Route::put('/dashboard/update', [HomeController::class, 'update'])->name('update.tinymce');
 			Route::resource('/users', UserController::class);
+			Route::post('/users/import', [UserController::class, 'import'])->name('users.import');
+			Route::get('/user/export', [UserController::class, 'export'])->name('user.export');
 			Route::resource('/periode', PeriodeController::class);
 			Route::resource('/pelatihan', PelatihanController::class)->except(['index']);
 			Route::get('/pelatihan/user/{year}/{id}', [PelatihanController::class, 'pelatihanById'])->name('pelatihan.user');
 			Route::get('/pelatihan/validate/{year}', [PelatihanController::class, 'pelatihanValidation'])->name('pelatihan.validate');
 			Route::get('/pelatihan/periode/{year}', [PelatihanController::class, 'pelatihanByPeriode'])->name('pelatihan.periode');
 			Route::get('/periode/{year}/grafik', [PelatihanController::class, 'pelatihanByPeriodeGrafik'])->name('pelatihan.grafik');
+			Route::get('/pelatihan/export/{year}/{id}', [PelatihanPerIdController::class, 'export'])->name('export.pelatihan');
 		});
 		Route::middleware(['karyawan'])->prefix('karyawan')->group(function () {
 			Route::get('/dashboard', [KaryawanController::class, 'index'])->name('karyawan.dashboard');
@@ -45,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
 			Route::get('/pencatatan/{year}/create', [PelatihanPerIdController::class, 'createByYear'])->name('pencatatan.create');
 			Route::post('/pencatatan/{year}/store', [PelatihanPerIdController::class, 'storeByYear'])->name('pencatatan.store');
 			Route::put('/pencatatan/{year}/update/{id}', [PelatihanPerIdController::class, 'update'])->name('pencatatan.update');
+			Route::get('/pencatatan/{year}/export/{id}', [PelatihanPerIdController::class, 'export'])->name('export.pencatatan');
 		});
 	Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 });

@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\Karyawan\KaryawanPerPeriodeDataTable;
+use App\Exports\PelatihanPerKaryawanExport;
+use App\Http\Middleware\Karyawan;
 use App\Models\KaryawanPerPeriode;
 use App\Models\PelatihanWajibPerPeriode;
 use App\Models\Periode;
 use App\Models\RiwayatPelatihan;
+use App\Models\User;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PelatihanPerIdController extends Controller
 {
@@ -38,6 +45,12 @@ class PelatihanPerIdController extends Controller
                 'tgl_selesai' => 'required',
             ]);
 
+            $tgl_mulai = new DateTime($request->tgl_mulai);
+            $tgl_selesai = new DateTime($request->tgl_selesai);
+            if($tgl_mulai->format('Y') != $year || $tgl_selesai->format('Y') != $year){
+                return redirect()->back()->with('error', 'Tanggal pelatihan harus sesuai dengan periode tahun yang dipilih');
+            }
+
             $periode_id = Periode::where('periode_name', $year)->first()->id;
             $karyawan_periode = KaryawanPerPeriode::where('periode_id', $periode_id)->where('user_id', auth()->user()->id)->first();
             if(!$karyawan_periode){
@@ -59,13 +72,17 @@ class PelatihanPerIdController extends Controller
                 $bukti_pelatihan = implode(',', $bukti_pelatihan);
             }
 
-            $tgl_mulai = strtotime($request->tgl_mulai);
-            $tgl_selesai = strtotime($request->tgl_selesai);
-            $durasi = ($tgl_selesai - $tgl_mulai) / 3600;
-            if($durasi < 0){
-                return redirect()->back()->with('error', 'Durasi pelatihan tidak boleh kurang dari 0 jam');
+            $durasi = (strtotime($request->tgl_selesai) - strtotime($request->tgl_mulai)) / 3600;
+            if ($durasi < 0) {
+                return redirect()->back()->with('error', 'Durasi pelatihan tidak boleh kurang dari 1 hari');
             }
-            
+
+            if($durasi > 7 && $durasi < 24){
+                $durasi = 7;
+            }else if($durasi > 24){
+                $durasi = $this->getWorkingDays($tgl_mulai, $tgl_selesai) * 7;
+            }
+
             $pelatihan = RiwayatPelatihan::create(
                 [
                 'user_id' => $karyawan_periode->id,
@@ -199,5 +216,47 @@ class PelatihanPerIdController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function export(string $year, string $id)
+    {
+        // handle karyawan data
+        $temp_user = KaryawanPerPeriode::find($id);
+        if(!$temp_user){
+            return redirect()->back()->with('error', 'User not found.');
+        }
+        // handle real user data
+        $real_user = User::find($temp_user->user_id);
+        if(!$real_user){
+            return redirect()->back()->with('error', 'User not found.');
+        }
+        // handle periode data
+        $periode_id = Periode::where('periode_name', $year)->first()->id;
+        if(!$periode_id){
+            return redirect()->back()->with('error', 'Periode not found.');
+        }
+
+        if(auth()->user()->role_id != 1){
+            $real_user = auth()->user();
+            $temp_user = KaryawanPerPeriode::where('user_id', $real_user->id)
+                ->where('periode_id', $periode_id)
+                ->first();
+        }
+            
+        return Excel::download(new PelatihanPerKaryawanExport($temp_user->id, $periode_id), 'pelatihan_'.$real_user->NIK.'_periode_'.$year.'.xlsx');
+    }
+
+    public function getWorkingDays(DateTime $startDate, DateTime $endDate): int {
+        $interval = DateInterval::createFromDateString('1 day');
+        $period = new DatePeriod($startDate, $interval, $endDate);
+    
+        $workingDays = 0;
+        foreach ($period as $day) {
+            // Exclude weekends (Saturday = 6, Sunday = 7)
+            if ($day->format('N') < 6) {
+                $workingDays++;
+            }
+        }
+        return $workingDays;
     }
 }

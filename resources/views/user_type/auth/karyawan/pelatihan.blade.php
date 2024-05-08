@@ -52,9 +52,16 @@
                         <div>
                             <h5 class="mb-0">Semua Pelatihan</h5>
                         </div>
-                        <a href="{{route('pencatatan.create',$year)}}" class="btn bg-gradient-dark btn-sm mb-1">
-                            +&nbsp; Tambah Pelatihan
-                        </a>
+                        <div class="d-flex gap-2">
+                            <form action="{{route('export.pencatatan', [$year, Auth::user()->id])}}">
+                                <button type="submit" role="button" class="btn bg-gradient-info btn-sm mb-0">
+                                    Unduh Data Pelatihan
+                                </button>
+                            </form>
+                            <a href="{{route('pencatatan.create',$year)}}" class="btn bg-gradient-dark btn-sm mb-1">
+                                +&nbsp; Tambah Pelatihan
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">

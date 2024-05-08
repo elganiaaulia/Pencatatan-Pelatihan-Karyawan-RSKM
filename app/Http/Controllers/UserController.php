@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\UsersDataTable;
+use App\Exports\UsersExport;
+use App\Imports\UsersImport;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -146,5 +149,23 @@ class UserController extends Controller
         }
         $user->delete();
         return redirect()->route('users.index')->with('success','User deleted successfully');
+    }
+
+    public function import(Request $request)
+    {
+        try{
+            $this->validate($request, [
+                'file_users' => 'required|mimes:xlsx,xls'
+            ]);
+            $file = $request->file('file_users');
+            Excel::import(new UsersImport, $file);
+            return redirect()->route('users.index')->with('success','User imported successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('users.index')->with('error', $e->getMessage());
+        }
+    }
+
+    public function export(){
+        return Excel::download(new UsersExport, 'users.xlsx');
     }
 }

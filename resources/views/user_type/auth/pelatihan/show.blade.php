@@ -28,7 +28,12 @@
                                 @endif
                             </h5>
                         </div>
-                        <div>
+                        <div class="d-flex gap-2">
+                            <form action="{{route('export.pelatihan', [$year, $id])}}">
+                                <button type="submit" role="button" class="btn bg-gradient-dark btn-sm mb-0">
+                                    Unduh Data Pelatihan
+                                </button>
+                            </form>
                             <a href="{{route('pelatihan.periode',$year)}}" class="btn bg-gradient-info btn-sm">
                                 Kembali
                             </a>

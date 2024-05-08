@@ -163,6 +163,9 @@ class PelatihanController extends Controller
             return redirect()->back()->with('error', 'Pelatihan not found.');
         }
         $persentase = ($persentase->sum('durasi') / 200) * 100;
+        if($persentase > 100) {
+            $persentase = 100;
+        }
         $karyawan_per_periode = KaryawanPerPeriode::find($riwayat_pelatihan->user_id);
         $karyawan_per_periode->persentase = $persentase;
         $karyawan_per_periode->save();
