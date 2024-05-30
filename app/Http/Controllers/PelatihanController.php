@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\KaryawanPerPeriodeDataTable;
 use App\DataTables\PelatihanPerKaryawanDataTable;
+use App\Exports\KaryawanPerYearExport;
 use App\Models\KaryawanPerPeriode;
 use App\Models\PelatihanWajibPerPeriode;
 use App\Models\Periode;
@@ -12,6 +13,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class PelatihanController extends Controller
 {
@@ -200,5 +203,11 @@ class PelatihanController extends Controller
         }
         $pelatihan_wajib->delete();
         return redirect()->back()->with('success', 'Pelatihan wajib deleted successfully.');
+    }
+
+    public function ExportByYear(string $year)
+    {
+        $periode_id = Periode::where('periode_name', $year)->first()->id;
+        return Excel::download(new KaryawanPerYearExport($periode_id), 'Pelatihan-Karyawan-'.$year.'.xlsx');
     }
 }

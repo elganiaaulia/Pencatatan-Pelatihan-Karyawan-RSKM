@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
 			Route::get('/pelatihan/periode/{year}', [PelatihanController::class, 'pelatihanByPeriode'])->name('pelatihan.periode');
 			Route::get('/periode/{year}/grafik', [PelatihanController::class, 'pelatihanByPeriodeGrafik'])->name('pelatihan.grafik');
 			Route::get('/pelatihan/export/{year}/{id}', [PelatihanPerIdController::class, 'export'])->name('export.pelatihan');
+			Route::get('/pelatihan/export-all/{year}', [PelatihanController::class, 'ExportByYear'])->name('export.user.periode');
 		});
 		Route::middleware(['karyawan'])->prefix('karyawan')->group(function () {
 			Route::get('/dashboard', [KaryawanController::class, 'index'])->name('karyawan.dashboard');

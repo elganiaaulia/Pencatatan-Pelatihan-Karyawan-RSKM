@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\PeriodeDataTable;
+use App\Models\KaryawanPerPeriode;
 use App\Models\Periode;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PeriodeController extends Controller
@@ -34,7 +36,17 @@ class PeriodeController extends Controller
             'periode_name' => 'required',
         ]);
 
-        Periode::create($request->all());
+        $get_all_karyawan = User::where('role_id', 2)->get();
+
+        $periode = Periode::create($request->all());
+
+        // Create KaryawanPerPeriode for all user
+        foreach($get_all_karyawan as $user) {
+            $karyawan_periode = KaryawanPerPeriode::create([
+                'periode_id' => $periode->id,
+                'user_id' => $user->id,
+            ]);
+        }
 
         return redirect()->route('periode.create')->with('success', 'Periode created successfully.');
     }

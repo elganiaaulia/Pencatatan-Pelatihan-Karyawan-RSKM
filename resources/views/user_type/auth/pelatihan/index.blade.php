@@ -18,12 +18,15 @@
         <div class="col-12">
             <div class="card mb-4 mx-4">
                 <div class="card-header pb-3">
-                    <div class="d-flex flex-row justify-content-between">
+                    <div class="d-flex flex-row flex-wrap justify-content-between">
                         <div>
                             <h5 class="mb-0">Semua Pelatihan</h5>
                         </div>
                         @if(auth()->user()->role_id == 1)
                         <div>
+                            <a href="{{route('export.user.periode',$year)}}" class="btn bg-gradient-dark btn-sm mb-1">
+                                Unduh Data
+                            </a>
                             <a href="{{route('pelatihan.validate',$year)}}" class="btn bg-gradient-warning btn-sm mb-1">
                                 Validasi
                             </a>

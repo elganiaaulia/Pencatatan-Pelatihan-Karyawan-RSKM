@@ -19,8 +19,8 @@ class Iterasi_2_Test extends TestCase
         ]);
         $response = $this->actingAs($user)->post(route('users.store'), 
         [
-            'full_name' => 'Test User',
-            'NIK' => '1234567890',
+            'full_name' => $this->faker->name(),
+            'NIK' => $this->faker->unique()->randomNumber(8),
             'email' => $this->faker->unique()->safeEmail(),
             'unit' => 'UGD Test',
             'role' => 2,

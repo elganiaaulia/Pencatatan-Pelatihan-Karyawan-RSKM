@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\DataTables\UsersDataTable;
 use App\Exports\UsersExport;
+use App\Http\Requests\Users\CreateUserRequest;
 use App\Imports\UsersImport;
+use App\Jobs\ImportUserJob;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class UserController extends Controller
 {
@@ -37,16 +40,9 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
         try{
-            $this->validate($request, [
-                'full_name' => 'required',
-                'NIK' => 'required|numeric',
-                'unit' => 'string',
-                'role' => 'required'
-            ]);
-    
             $input = $request->all();
             
             $temp = [];
@@ -157,11 +153,12 @@ class UserController extends Controller
             $this->validate($request, [
                 'file_users' => 'required|mimes:xlsx,xls'
             ]);
-            $file = $request->file('file_users');
-            Excel::import(new UsersImport, $file);
+            $file = $request->file('file_users')->store('temp');
+            
+            ImportUserJob::dispatch($file);
             return redirect()->route('users.index')->with('success','User imported successfully');
-        } catch (\Exception $e) {
-            return redirect()->route('users.index')->with('error', $e->getMessage());
+        } catch (ValidationException $e) {
+            return redirect()->route('users.index')->with('error', $e->failures());
         }
     }
 

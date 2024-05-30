@@ -27,10 +27,10 @@ class Iterasi_3_Test extends TestCase
         $response = $this->actingAs($user)->post(route('pencatatan.store', $periode->periode_name), 
         [
             'wajib' => $this->faker->randomElement([0, 1]),
-            'nama_pelatihan' => $this->faker->sentence(),
+            'nama_pelatihan' => $this->faker->sentence(2),
             'nama_penyelenggara' => $this->faker->company(),
-            'tgl_mulai' => '2024-03-30T13:35',
-            'tgl_selesai' => '2024-03-30T18:35',
+            'tgl_mulai' => $periode->periode_name . '-03-30T13:35',
+            'tgl_selesai' => $periode->periode_name . '-03-30T18:35',
         ]);
         $response->assertRedirectToRoute('pencatatan.show', $periode->periode_name)->assertSessionHas('success');
     }
@@ -49,8 +49,8 @@ class Iterasi_3_Test extends TestCase
             'wajib' => $this->faker->randomElement([0, 1]),
             'nama_pelatihan' => $this->faker->sentence(),
             'nama_penyelenggara' => $this->faker->company(),
-            'tgl_mulai' => '2024-03-30T13:35',
-            'tgl_selesai' => '2024-03-30T18:35', //5 jam
+            'tgl_mulai' => $periode->periode_name . '-03-30T13:35',
+            'tgl_selesai' => $periode->periode_name . '-03-30T18:35', //5 jam
         ];
         $response = $this->actingAs($user)->post(route('pencatatan.store', $periode->periode_name), $data_pelatihan);
         $response->assertRedirectToRoute('pencatatan.show', $periode->periode_name)->assertSessionHas('success');
@@ -75,8 +75,8 @@ class Iterasi_3_Test extends TestCase
             'wajib' => $this->faker->randomElement([0, 1]),
             'nama_pelatihan' => $this->faker->sentence(),
             'nama_penyelenggara' => $this->faker->company(),
-            'tgl_mulai' => '2024-03-30T13:35',
-            'tgl_selesai' => '2024-03-30T18:35', //5 jam
+            'tgl_mulai' => $periode->periode_name . '-03-30T13:35',
+            'tgl_selesai' => $periode->periode_name . '-03-30T18:35', //5 jam
         ];
         $response = $this->actingAs($user)->post(route('pencatatan.store', $periode->periode_name), $data_pelatihan);
         $response->assertRedirectToRoute('pencatatan.show', $periode->periode_name)
@@ -165,8 +165,8 @@ class Iterasi_3_Test extends TestCase
             'wajib' => $this->faker->randomElement([0, 1]),
             'nama_pelatihan' => $this->faker->sentence(),
             'nama_penyelenggara' => $this->faker->company(),
-            'tgl_mulai' => '2024-03-30T13:35',
-            'tgl_selesai' => '2024-03-30T18:35', //5 jam
+            'tgl_mulai' => $periode->periode_name . '-03-30T13:35',
+            'tgl_selesai' => $periode->periode_name . '-03-30T18:35', //5 jam
         ];
         $response = $this->actingAs($user)->post(route('pencatatan.store', $periode->periode_name), $data_pelatihan);
         $response->assertRedirectToRoute('pencatatan.show', $periode->periode_name)

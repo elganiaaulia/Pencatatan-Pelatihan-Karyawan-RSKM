@@ -55,11 +55,11 @@
         <div class="modal-body">
             
             <i class="ni ni-badge text-sm me-2"></i> Manual Input
-            <form role="form text-left" method="POST" target="{{route('users.store')}}">
+            <form role="form text-left" method="POST" action="{{route('users.store')}}">
                 @csrf
                 <label>Nama Lengkap</label>
                 <div class="input-group mb-3">
-                    <input name="full_name" type="text" class="form-control" placeholder="Elgania Aulia" aria-label="nama-lengkap" aria-describedby="text-addon">
+                    <input name="full_name" type="text" class="form-control" placeholder="Nama Lengkap" aria-label="nama-lengkap" aria-describedby="text-addon">
                 </div>
                 <label>NIK</label>
                 <div class="input-group mb-3">
